@@ -1,0 +1,131 @@
+---
+title: "Assignment 5"
+author: "Jack Scherer"
+date: "2024-10-30"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(lubridate)
+library(stringr)
+library(mosaicData)
+library(dplyr)
+library(ggplot2)
+```
+
+### Exercise 1 {-}
+
+Convert the following to date or date/time objects.
+
+**a)** September 13, 2010.
+```{r}
+(a <- mdy( "September 13, 2010" ))
+```
+
+
+**b)** Sept 13, 2010.
+```{r}
+date.b <- "Sept 13, 2010"
+date.b <- str_replace( date.b, 'Sep\\D*', 'Sep ' )
+( b <- mdy( date.b ) )
+```
+
+**c)** Sep 13, 2010.
+```{r}
+(c <- mdy( "Sep 13, 2010" ))
+```
+
+**d)** S 13, 2010. Comment on the month abbreviation needs.
+\color{blue}The month abbreviation needs to be three letters.
+\color{black}
+```{r}
+date.c <- "S 13, 2010"
+date.c <- str_replace( date.c, 'S', 'Sep ' )
+( b <- mdy( date.c ) )
+```
+
+
+**e)** 07-Dec-1941.
+```{r}
+dmy("07-Dec-1941")
+```
+
+
+**f)** 1-5-1998. Comment on why you might be wrong.
+\color{blue}I do not know whether the order is day-month-year or month-day-year.
+\color{black}
+```{r}
+dmy("1-5-1998")
+mdy("1-5-1998")
+```
+
+
+**g)** 21-5-1998. Comment on why you know you are correct.
+\color{blue}The highest numeric value for a month is 12, so 21 must indicate the day.
+\color{black}
+```{r}
+dmy("21-5-1998")
+```
+
+**h)** 2020-May-5 10:30 am
+```{r}
+ymd_hm("2020-May-5 10:30 am")
+```
+
+
+**i)** 2020-May-5 10:30 am PDT (ex Seattle)
+```{r}
+ymd_hm("2020-May-5 10:30 am", tz='America/Los_Angeles')
+```
+
+**j)** 2020-May-5 10:30 am AST (ex Puerto Rico)
+```{r}
+ymd_hm("2020-May-5 10:30 am", tz='America/Puerto_Rico')
+```
+
+
+### Exercise 3 {-}
+
+Suppose you have arranged for a phone call to be at 3 pm on May 8, 2025 at Arizona time. However, the recipient will be in Auckland, NZ. What time will it be there?
+```{r}
+az.dt <- ymd_hm( '2025-05-08 15:00', tz='US/Arizona' )
+
+nz.dt <- with_tz( az.dt, tzone='Pacific/Auckland' )
+nz.dt
+```
+
+
+
+### Exercise 5 {-}
+
+It turns out there is some interesting periodicity regarding the number of births on particular days of the year.
+
+**a)** Using the `mosaicData` package, load the data set `Births78` which records the number of children born on each day in the United States in 1978. Because this problem is intended to show how to calculate the information using the `date`, remove all the columns *except* `date` and `births`.
+```{r}
+Births <- mosaicData::Births78
+Births <- Births %>%
+  select( c('date', 'births') )
+```
+
+
+**b)** Graph the number of `births` vs the `date` with date on the x-axis. What stands out to you? Why do you think we have this trend?
+```{r}
+ggplot( Births, aes(x=date, y=births) ) +
+  geom_point()
+```
+\color{blue}It appears that births are most common during the late summer and early fall. Also it appears that there is some day of the week where births are less common, but the plot is too zoomed out to figure out which one. 
+\color{black}
+
+**c)** To test your assumption, we need to figure out the what day of the week each observation is. Use `dplyr::mutate` to add a new column named `dow` that is the day of the week (Monday, Tuesday, etc). This calculation will involve some function in the `lubridate` package and the `date` column.
+```{r}
+Births <- Births %>%
+  mutate( dow=wday(date) )
+```
+
+
+**d)** Plot the data with the point color being determined by the day of the week variable.
+```{r}
+ggplot( Births, aes(x=date, y=births, color=dow) ) +
+  geom_point()
+```
+\color{blue}It appears that Sunday and Saturday have less births than the weekdays.

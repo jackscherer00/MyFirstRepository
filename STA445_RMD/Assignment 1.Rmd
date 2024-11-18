@@ -1,0 +1,233 @@
+---
+title: "Assignment 1"
+author: "Jack Scherer"
+date: "2024-09-30"
+output: pdf_document
+---
+
+```{r setup, include=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+
+## Exercises  {#Exercises_DataStructures}
+1. Create a vector of three elements (2,4,6) and name that vector `vec_a`. Create a second vector, `vec_b`, that contains (8,10,12). Add these two vectors together and name the result `vec_c`.
+```{r}
+vec_a <- c(2,4,6)
+vec_b <- c(8,10,12)
+vec_c <- c(vec_a,vec_b)
+vec_c
+```
+
+
+2. Create a vector, named `vec_d`, that contains only two elements (14,20). Add this vector to `vec_a`. What is the result and what do you think R did (look up the recycling rule using Google)? What is the warning message that R gives you?
+```{r}
+vec_d <- c(14,20)
+vec_a + vec_d
+```
+\color{blue}It adds values at corresponding positions together until it runs out of values in one of the vectors. At this point, it starts over at the first value and begins cycling through again throught the shorter vector. In this case, the long vector's length is not a multiple of the shorter vector's length, so it does not complete a whole number of cycles.
+\color{black}
+
+
+3. Next add 5 to the vector vec_a. What is the result and what did R do? Why doesn't in give you a warning message similar to what you saw in the previous problem?
+```{r}
+vec_a + 5
+```
+\color{blue} R adds 5 to each value in vector a. R does not produce a warning message because the short (vector) of length 1 goes into vector a's length of 3 an even number of times.
+\color{black}
+
+
+4. Generate the vector of integers $\left\{ 1,2,\dots5\right\}$ in two different ways. 
+    a) First using the `seq()` function 
+```{r}
+seq(1,5)
+```
+    
+    b) Using the `a:b` shortcut.
+```{r}
+1:5
+```
+
+
+5. Generate the vector of even numbers $\left\{ 2,4,6,\dots,20\right\}$ 
+    a) Using the seq() function and 
+```{r}
+seq(2,20,2)
+```
+    
+    b) Using the a:b shortcut and some subsequent algebra. *Hint: Generate the vector 1-10 and then multiple it by 2*.
+```{r}
+(1:10)*2
+```
+    
+
+6. Generate a vector of 21 elements that are evenly placed between 0 and 1 using the `seq()` command and name this vector `x`. 
+```{r}
+x <- seq(0,1,1/21)
+x
+```
+
+
+7. Generate the vector $\left\{ 2,4,8,2,4,8,2,4,8\right\}$ 
+  using the `rep()` command to replicate the vector c(2,4,8). 
+```{r}
+rep(c(2,4,8),3)
+```
+  
+
+8. Generate the vector $\left\{ 2,2,2,2,4,4,4,4,8,8,8,8\right\}$
+  using the `rep()` command. You might need to check the help file for rep() to see all of the options that rep() will accept. In particular, look at the optional argument `each=`.
+```{r}
+rep( c(2,4,8), times=1, each=4 )
+```
+  
+
+9. The vector `letters` is a built-in vector to R and contains the lower case English alphabet. 
+    a) Extract the 9th element of the letters vector.
+```{r}
+letters[9]
+```
+    
+    b) Extract the sub-vector that contains the 9th, 11th, and 19th elements.
+```{r}
+c(letters[9],letters[11],letters[19])
+```
+    
+    c) Extract the sub-vector that contains everything except the last two elements.
+```{r}
+c(letters[1:24])
+```
+    
+
+10. In this problem, we will work with the matrix 
+
+    \[ \left[\begin{array}{ccccc}
+    2 & 4 & 6 & 8 & 10\\
+    12 & 14 & 16 & 18 & 20\\
+    22 & 24 & 26 & 28 & 30
+    \end{array}\right]\]
+    
+    a) Create the matrix in two ways and save the resulting matrix as `M`.
+        i. Create the matrix using some combination of the `seq()` and `matrix()` commands.
+        ii. Create the same matrix by some combination of multiple `seq()` commands and either the `rbind()` or `cbind()` command. 
+```{r}
+M <- seq( 2,30,2 ) %>%
+  matrix( nrow=3, ncol=5, byrow=TRUE )
+M
+
+M <- rbind(
+  seq( 2,10,2 ),
+  seq( 12,20,2 ),
+  seq( 22,30,2 ) 
+)
+M
+```
+
+    b) Extract the second row out of `M`.
+```{r}
+M[2,]
+```
+  
+    c) Extract the element in the third row and second column of `M`.
+```{r}
+M[3,2]
+```
+    
+
+11. Create and manipulate a data frame.
+    a) Create a `data.frame` named `my.trees` that has the following columns:
+        + Girth = {8.3, 8.6, 8.8, 10.5, 10.7, 10.8, 11.0}
+        + Height= {70, 65, 63, 72, 81, 83, 66}
+        + Volume= {10.3, 10.3, 10.2, 16.4, 18.8, 19.7, 15.6}
+```{r}
+Girth = c( 8.3, 8.6, 8.8, 10.5, 10.7, 10.8, 11.0 )
+Height = c( 70, 65, 63, 72, 81, 83, 66 )
+Volume = c( 10.3, 10.3, 10.2, 16.4, 18.8, 19.7, 15.6 )
+
+my.trees <- data.frame( Girth=Girth, Height=Height, Volume=Volume )
+my.trees
+```
+        
+    b) Without using `dplyr` functions, extract the third observation (i.e. the third row)
+```{r}
+my.trees[3,]
+```
+    
+  c) Without using `dplyr` functions, extract the Girth column referring to it by name (don't use whatever order you placed the columns in).
+```{r}
+my.trees$Girth
+```
+    
+  d) Without using `dplyr` functions, print out a data frame of all the observations *except* for the fourth observation. (i.e. Remove the fourth observation/row.)
+```{r}
+my.trees[-4,]
+```
+    
+  e) Without using `dplyr` functions, use the `which()` command to create a vector of row indices that have a `girth` greater than 10. Call that vector `index`.
+```{r}
+index <- which( my.trees$Girth > 10 )
+index
+```
+    
+  f) Without using `dplyr` functions, use the `index` vector to create a small data set with just the large girth trees.
+```{r}
+small.set <- my.trees[index,]
+small.set
+```
+    
+  g) Without using `dplyr` functions, use the `index` vector to create a small data set with just the small girth trees.
+```{r}
+my.trees[-index,]
+```
+
+12. The following code creates a `data.frame` and then has two different methods for removing the rows with `NA` values in the column `Grade`. Explain the difference between the two.
+    ```{r, eval=FALSE}
+    df <- data.frame(name= c('Alice','Bob','Charlie','Daniel'),
+                     Grade = c(6,8,NA,9))
+    
+    df[ -which(  is.na(df$Grade) ), ]
+    df[  which( !is.na(df$Grade) ), ]
+    ```
+    
+13. Creation of data frames is usually done by binding together vectors while using `seq` and `rep` commands. However often we need to create a data frame that contains all possible combinations of several variables. The function `expand.grid()` addresses this need.
+    ```{r, eval=FALSE}
+    expand.grid( F1=c('A','B'), F2=c('x','w','z'), replicate=1:2 )
+    ```
+    A fun example of using this function is making several graphs of the standard normal distribution versus the t-distribution. Use the `expand.grid` function to create a `data.frame` with all combinations of `x=seq(-4,4,by=.01)`, `dist=c('Normal','t')`, and `df=c(2,3,4,5,10,15,20,30)`. Use the `dplyr::mutate` command with the `if_else` command to generate the function heights `y` using either `dt(x,df)` or `dnorm(x)` depending on what is in the distribution column.
+    ```{r}
+     expand.grid( x=seq(-4,4,by=.01), 
+                 dist=c('Normal','t'), 
+                 df=c(2,3,4,5,10,15,20,30) ) %>%
+      mutate( y = if_else(dist == 't', dt(x, df), dnorm(x) ) ) %>%
+      ggplot( aes( x=x, y=y, color=dist) ) + 
+      geom_line() + 
+      facet_wrap(~df)
+    ```
+    
+
+14. Create and manipulate a list.
+  a) Create a list named my.test with elements
+        + x = c(4,5,6,7,8,9,10)
+        + y = c(34,35,41,40,45,47,51)
+        + slope = 2.82
+        + p.value = 0.000131
+```{r}
+x = c(4,5,6,7,8,9,10)
+y = c(34,35,41,40,45,47,51)
+slope = 2.82
+p.value = 0.000131
+
+my.test <- list( 'x'=x,'y'=y,'slope'=slope,'p.value'=p.value )
+my.test
+```
+        
+  b) Extract the second element in the list.
+```{r}
+my.test[2]
+```
+    
+  c) Extract the element named `p.value` from the list.
+```{r}
+my.test['p.value']
+```
+    

@@ -1,0 +1,129 @@
+---
+title: "Assignment 7"
+author: "Jack Scherer"
+date: "2024-11-06"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(cowplot)
+library(RColorBrewer)
+library(latex2exp)
+```
+
+### Exercise 2 {-}
+
+Using the `datasets::trees` data, complete the following. This question refreshes create a linear model, graphing the linear model, and introduces using some LaTeX expressions on the graph.
+
+**a)** Create a regression model for $y=$ `Volume` as a function of $x=$ `Height`.
+```{r}
+model.trees <- lm( Volume ~ Height, data = trees )
+```
+
+
+**b)** Display the `summary` of the  model to view the y-intercept and slope of the regression line.
+```{r}
+summary(model.trees)
+```
+
+
+**c)** Using `ggplot2`, create a scatter plot of Volume vs Height. 
+```{r}
+plot.trees <- ggplot( data=trees, aes(x=Height, y=Volume) ) +
+  geom_point()
+
+plot.trees
+```
+
+
+**d)** Color the scatter using the `Girth` variable.
+```{r}
+plot.trees.2 <- ggplot( data=trees, aes(x=Height, y=Volume, color=Girth) ) +
+  geom_point()
+
+plot.trees.2
+```
+
+
+**e)** Modify the color scheme using a RColorBrewer palette.
+```{r}
+plot.trees.3 <- plot.trees.2 +
+  #scale_color_distiller( palette = "RdYlBu" ) +
+  scale_color_viridis_c(option='viridis')
+
+plot.trees.3
+```
+
+
+**f)** Create a nice white filled rectangle to add text information. The following might be useful.
+
+```{r, eval=FALSE}
+annotate('rect', xmin=65, xmax=75, ymin=60, ymax=74,
+         fill='white', color='black') +
+```
+
+```{r}
+plot.trees.4 <- plot.trees.3 +
+  annotate('rect', xmin=65, xmax=77, ymin=60, ymax=74,
+         fill='white', color='black')
+
+plot.trees.4
+```
+
+
+**g)** Use the `broom` package to extract the coefficients of the best-fit line. Add this information as an annotation to the graph, which should follow a form that looks like $\hat{y}_i = (INTERCEPT) + (SLOPE)* x_i$. Place the annotation within the white text box.
+```{r}
+broom::tidy( model.trees )
+
+plot.trees.5 <- plot.trees.4 +
+  geom_text( label="Volume = -87.12 + (1.54 * Height)", x=71, y=70, colour='black' )
+
+plot.trees.5
+```
+
+
+**h)** Use the `broom` package to extract the coefficient of determination $r^2$ from the model. Add the annotation to your graph, which should look something like $R^2 = (VALUE)$
+
+```{r}
+broom::glance( model.trees )
+
+plot.trees.6 <- plot.trees.5 +
+  geom_text( label=latex2exp::TeX('$R^2 = 0.36$'), x=67.4, y=65, colour='black' )
+
+plot.trees.6
+```
+
+
+**i)** Add the regression line in red. There are several ways to do this.
+```{r}
+trees <- trees %>% 
+  mutate( fit = fitted(model.trees) )
+
+plot.trees.7 <- plot.trees.6 +
+  geom_line( aes( y=trees$fit ), colour='red' )
+
+plot.trees.7
+```
+
+
+**j)** Properly label the axes of the graph.
+```{r}
+plot.trees.8 <- plot.trees.7 +
+  labs( x='Tree Height', y='Tree Volume' )
+
+plot.trees.8
+```
+
+
+**k)** Add a descriptive title to the graph.
+```{r}
+plot.trees.9 <- plot.trees.8 +
+  labs( title='Tree Height vs. Volume' )
+
+plot.trees.9
+```
+
+
+
+
